@@ -1,8 +1,9 @@
 import crypto from 'node:crypto';
 import nodemailer from 'nodemailer';
 import { smtpRepository } from './smtp.repository';
+import { env } from '../../config/env';
 
-const ENCRYPTION_KEY = process.env.SMTP_ENCRYPTION_KEY || '';
+const ENCRYPTION_KEY = env.SMTP_ENCRYPTION_KEY || '';
 // AES-256-GCM: authenticated encryption — provides both confidentiality and
 // integrity. The auth tag prevents ciphertext tampering (fixes SonarQube S5542).
 const ALGORITHM = 'aes-256-gcm';
@@ -84,17 +85,17 @@ export const smtpService = {
      */
     async sendSystemEmail(to: string, subject: string, html: string) {
         const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: Number(process.env.SMTP_PORT),
-            secure: process.env.SMTP_SECURE === 'true',
+            host: env.SMTP_HOST,
+            port: env.SMTP_PORT,
+            secure: env.SMTP_SECURE,
             auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
+                user: env.SMTP_USER,
+                pass: env.SMTP_PASS,
             },
         });
 
-        const fromName = process.env.SMTP_FROM_NAME || 'DraftInvoice';
-        const fromEmail = process.env.SMTP_FROM_EMAIL || 'no-reply@draftinvoice.com';
+        const fromName = env.SMTP_FROM_NAME;
+        const fromEmail = env.SMTP_FROM_EMAIL;
 
         await transporter.sendMail({
             from: `"${fromName}" <${fromEmail}>`,

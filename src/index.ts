@@ -19,7 +19,10 @@ import path from 'node:path';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: env.FRONTEND_URL,
+    credentials: true,
+}));
 app.use(express.json({
     verify: (req: any, res, buf) => {
         req.rawBody = buf.toString();

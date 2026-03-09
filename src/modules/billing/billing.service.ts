@@ -1,10 +1,11 @@
 import { billingRepository } from './billing.repository';
 import { authRepository } from '../auth/auth.repository';
+import { env } from '../../config/env';
 
 const PAYSTACK_BASE = 'https://api.paystack.co';
-const SECRET_KEY = process.env.PAYSTACK_SECRET_KEY ?? '';
-const PRO_PRICE_KOBO = Number(process.env.PRO_PRICE_KOBO ?? 999900); // ₦9,999
-const FRONTEND_URL = process.env.FRONTEND_URL ?? 'http://localhost:5173';
+const SECRET_KEY = env.PAYSTACK_SECRET_KEY ?? '';
+const PRO_PRICE_KOBO = env.PRO_PRICE_KOBO;
+const FRONTEND_URL = env.FRONTEND_URL;
 
 async function paystackFetch(path: string): Promise<Record<string, unknown>> {
     const res = await fetch(`${PAYSTACK_BASE}${path}`, {
