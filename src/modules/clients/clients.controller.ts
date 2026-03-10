@@ -5,7 +5,7 @@ import { z } from 'zod';
 const ClientSchema = z.object({
     company_name: z.string().min(1, 'Company name is required'),
     contact_name: z.string().optional(),
-    email: z.string().email('Invalid email').optional().or(z.literal('')),
+    email: z.email('Invalid email').optional().or(z.literal('')),
     phone: z.string().optional(),
     address_line1: z.string().optional(),
     address_line2: z.string().optional(),
@@ -48,7 +48,7 @@ export const getClients = async (req: Request, res: Response) => {
 
 export const getClient = async (req: Request, res: Response) => {
     try {
-        const client = await clientsRepository.findById(req.params.id, req.user!.id);
+        const client = await clientsRepository.findById(req.params.id as string, req.user!.id);
         if (!client) { res.status(404).json({ error: 'Client not found' }); return; }
         res.json(client);
     } catch (err) {
@@ -64,7 +64,7 @@ export const updateClient = async (req: Request, res: Response) => {
         return;
     }
     try {
-        const client = await clientsRepository.update(req.params.id, req.user!.id, parsed.data as any);
+        const client = await clientsRepository.update(req.params.id as string, req.user!.id, parsed.data as any);
         if (!client) { res.status(404).json({ error: 'Client not found' }); return; }
         res.json(client);
     } catch (err) {
@@ -75,7 +75,7 @@ export const updateClient = async (req: Request, res: Response) => {
 
 export const deleteClient = async (req: Request, res: Response) => {
     try {
-        const deleted = await clientsRepository.deleteById(req.params.id, req.user!.id);
+        const deleted = await clientsRepository.deleteById(req.params.id as string, req.user!.id);
         if (!deleted) { res.status(404).json({ error: 'Client not found' }); return; }
         res.status(204).send();
     } catch (err) {

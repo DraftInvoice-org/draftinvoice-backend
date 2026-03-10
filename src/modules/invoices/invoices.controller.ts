@@ -8,7 +8,7 @@ const InvoiceSchema = z.object({
     title: z.string().optional().default('Untitled Invoice'),
     invoice_data: z.any(), // Consider a more specific schema if structure is known
     status: z.string().optional().default('draft'),
-    client_id: z.string().uuid().optional().nullable(),
+    client_id: z.uuid().optional().nullable(),
     invoice_number: z.string().optional().nullable(),
     amount_due: z.number().optional().nullable(),
     due_date: z.string().optional().nullable(), // ISO date string
@@ -43,7 +43,7 @@ export const getInvoices = async (req: Request, res: Response) => {
 export const getInvoiceById = async (req: Request, res: Response) => {
     if (!req.user) { res.status(401).json({ error: 'Unauthorized' }); return; }
     try {
-        const invoice = await invoicesRepository.findById(req.params.id, req.user.id);
+        const invoice = await invoicesRepository.findById(req.params.id as string, req.user.id);
         if (!invoice) { res.status(404).json({ error: 'Invoice not found' }); return; }
         res.json(invoice);
     } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to fetch invoice' }); }
@@ -55,7 +55,7 @@ export const updateInvoice = async (req: Request, res: Response) => {
     if (!req.user) { res.status(401).json({ error: 'Unauthorized' }); return; }
     try {
         const invoice = await invoicesRepository.update(
-            req.params.id, req.user.id, parsed.data.title, parsed.data.invoice_data, parsed.data.status,
+            req.params.id as string, req.user.id, parsed.data.title, parsed.data.invoice_data, parsed.data.status,
             { clientId: parsed.data.client_id, invoiceNumber: parsed.data.invoice_number, amountDue: parsed.data.amount_due, dueDate: parsed.data.due_date }
         );
         if (!invoice) { res.status(404).json({ error: 'Invoice not found' }); return; }
@@ -66,7 +66,7 @@ export const updateInvoice = async (req: Request, res: Response) => {
 export const deleteInvoice = async (req: Request, res: Response) => {
     if (!req.user) { res.status(401).json({ error: 'Unauthorized' }); return; }
     try {
-        const success = await invoicesRepository.delete(req.params.id, req.user.id);
+        const success = await invoicesRepository.delete(req.params.id as string, req.user.id);
         if (!success) { res.status(404).json({ error: 'Invoice not found' }); return; }
         res.status(204).send();
     } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to delete invoice' }); }
@@ -75,7 +75,7 @@ export const deleteInvoice = async (req: Request, res: Response) => {
 export const markInvoicePaid = async (req: Request, res: Response) => {
     if (!req.user) { res.status(401).json({ error: 'Unauthorized' }); return; }
     try {
-        const invoice = await invoicesRepository.markPaid(req.params.id, req.user.id);
+        const invoice = await invoicesRepository.markPaid(req.params.id as string, req.user.id);
         if (!invoice) { res.status(404).json({ error: 'Invoice not found' }); return; }
         res.json(invoice);
     } catch (err) { console.error(err); res.status(500).json({ error: 'Failed to mark invoice as paid' }); }
@@ -93,7 +93,7 @@ export const sendInvoiceEmail = async (req: Request, res: Response) => {
     if (!parsed.success) { res.status(400).json({ error: parsed.error.issues[0].message }); return; }
 
     try {
-        const invoice = await invoicesRepository.findById(req.params.id, req.user.id);
+        const invoice = await invoicesRepository.findById(req.params.id as string, req.user.id);
         if (!invoice) { res.status(404).json({ error: 'Invoice not found' }); return; }
 
         const clientEmail = invoice.client_snapshot?.email;
@@ -101,11 +101,10 @@ export const sendInvoiceEmail = async (req: Request, res: Response) => {
             res.status(422).json({ error: 'This invoice has no client email address. Please attach a client with a valid email first.' });
             return;
         }
-
         await emailService.sendInvoiceEmail({
             userId: req.user.id,
             to: clientEmail,
-            subject: `Invoice${invoice.invoice_number ? ` #${invoice.invoice_number}` : ''} from ${req.user.email}`,
+            subject: `Invoice${invoice.invoice_number ? '#' + invoice.invoice_number : ''} from ${req.user.email}`,
             clientName: invoice.client_snapshot?.contact_name ?? invoice.client_snapshot?.company_name ?? 'there',
             invoiceNumber: invoice.invoice_number,
             amountDue: invoice.amount_due,
