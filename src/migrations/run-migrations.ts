@@ -10,7 +10,9 @@ const MIGRATIONS = [
     '004_api_keys.sql',
     '005_granular_downloads.sql',
     '006_password_reset.sql',
-    '007_kyc_schema.sql'
+    '007_kyc_schema.sql',
+    '008_fix_inconsistent_schema.sql',
+    '009_fix_apikey_prefix_length.sql'
 ];
 
 async function runMigrations() {

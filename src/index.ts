@@ -56,4 +56,6 @@ startOverdueCron();
 
 app.listen(env.PORT, () => {
     console.log(`Backend server running at http://localhost:${env.PORT}`);
+    console.log(`Frontend URL (CORS): ${env.FRONTEND_URL}`);
+    console.log(`Environment: ${env.NODE_ENV}`);
 });

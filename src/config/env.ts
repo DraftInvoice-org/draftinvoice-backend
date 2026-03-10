@@ -25,12 +25,12 @@ export const env = {
     PDF_WORKER_URL: process.env.PDF_WORKER_URL || 'http://localhost:3000/api/generate',
 
     // Paystack
-    PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY,
+    PAYSTACK_SECRET_KEY: process.env.NODE_ENV === 'production' ? required('PAYSTACK_SECRET_KEY') : process.env.PAYSTACK_SECRET_KEY,
     PRO_PRICE_KOBO: Number(process.env.PRO_PRICE_KOBO || 999900),
-    FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+    FRONTEND_URL: process.env.NODE_ENV === 'production' ? required('FRONTEND_URL') : (process.env.FRONTEND_URL || 'http://localhost:5173'),
 
     // SMTP
-    SMTP_ENCRYPTION_KEY: process.env.SMTP_ENCRYPTION_KEY,
+    SMTP_ENCRYPTION_KEY: process.env.NODE_ENV === 'production' ? required('SMTP_ENCRYPTION_KEY') : process.env.SMTP_ENCRYPTION_KEY,
     SMTP_HOST: process.env.SMTP_HOST,
     SMTP_PORT: Number(process.env.SMTP_PORT || 587),
     SMTP_SECURE: process.env.SMTP_SECURE === 'true',

@@ -1,5 +1,9 @@
 -- Business Verifications Table
-CREATE TYPE verification_status AS ENUM ('pending', 'approved', 'rejected');
+DO $$ BEGIN
+    CREATE TYPE verification_status AS ENUM ('pending', 'approved', 'rejected');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 CREATE TABLE IF NOT EXISTS business_verifications (
     id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

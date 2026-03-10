@@ -1,6 +1,7 @@
 import { billingRepository } from './billing.repository';
 import { authRepository } from '../auth/auth.repository';
 import { env } from '../../config/env';
+import fetch from 'node-fetch';
 
 const PAYSTACK_BASE = 'https://api.paystack.co';
 const SECRET_KEY = env.PAYSTACK_SECRET_KEY ?? '';
@@ -45,12 +46,12 @@ export const billingService = {
             },
             body,
         });
-        const data = await initRes.json() as {
-            status: boolean;
-            data: { authorization_url: string; reference: string };
-        };
+        const data = await initRes.json();
 
-        if (!data.status) throw Object.assign(new Error('Failed to initialize payment'), { status: 502 });
+        if (!data.status) {
+            console.error('[Paystack Init Error]:', data.message || 'Unknown error', data);
+            throw Object.assign(new Error(data.message || 'Failed to initialize payment'), { status: 502 });
+        }
 
         const { authorization_url: authorizationUrl, reference } = data.data;
 
