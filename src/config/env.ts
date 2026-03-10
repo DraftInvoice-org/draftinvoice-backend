@@ -21,6 +21,9 @@ export const env = {
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
     NODE_ENV: process.env.NODE_ENV || 'development',
 
+    // Microservices
+    PDF_WORKER_URL: process.env.PDF_WORKER_URL || 'http://localhost:3000/api/generate',
+
     // Paystack
     PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY,
     PRO_PRICE_KOBO: Number(process.env.PRO_PRICE_KOBO || 999900),

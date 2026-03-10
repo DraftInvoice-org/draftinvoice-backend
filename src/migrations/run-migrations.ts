@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { query } from '../config/database';
 
 const MIGRATIONS = [
+    '000_base_schema.sql',
     '001_auth_schema.sql',
     '002_clients_and_invoice_updates.sql',
     '003_billing.sql',
@@ -27,5 +28,8 @@ async function runMigrations() {
     process.exit(0);
 }
 
-await runMigrations();
+runMigrations().catch(err => {
+    console.error('Fatal migration error:', err);
+    process.exit(1);
+});
 

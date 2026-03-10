@@ -1,5 +1,6 @@
 import { Queue, Worker, Job } from 'bullmq';
 import { redisConnection } from '../config/redis';
+import { env } from '../config/env';
 import { templatesRepository } from '../modules/templates/templates.repository';
 import { compileTemplateToHtml } from '../utils/htmlCompiler';
 import fetch from 'node-fetch';
@@ -47,7 +48,7 @@ export const invoiceWorker = new Worker(INVOICE_QUEUE_NAME, async (job: Job) => 
 
     const html = compileTemplateToHtml(template, overrides || {});
 
-    const workerUrl = process.env.PDF_WORKER_URL || 'http://localhost:3000/api/generate';
+    const workerUrl = env.PDF_WORKER_URL;
     console.log(`[Worker] Dispatching PDF generation request down to microservice, invoice ${job.id}`);
 
     const response = await fetch(workerUrl, {
